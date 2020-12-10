@@ -53,10 +53,11 @@ function onMessageHandler (target, context, msg, self) {
 
   if (self) { return; } // Ignore messages from the bot
   
-  info(target, "Hola gente! Si quereis que el robot asesino lea vuestros mensajes, escribidlos como destacados (lo de gastar puntos).\n Para saber los comandos !comandos");
+  info(target, "Hola gente! Para saber los comandos !comandos");
   
+  var destacado = false;
   if (context['msg-id'] == 'highlighted-message') {
-      readTextUser(msg, context['username']); 
+      destacado = true;
   }
 
 
@@ -64,11 +65,31 @@ function onMessageHandler (target, context, msg, self) {
   const commandName = msg.trim().split(' ')[0];
   var success = true;
   if (commandName.charAt(0)==='!') {
-    if (ready || commandName == '!comandos') {
+    if (ready || commandName == '!comandos' || destacado) {
       const sound = commandName.substring(1);
       switch (sound) {      
         case "hypnotoad":
           client.say(target, "All glory to the hypno toad!");
+          playSound(sound);    
+          break;
+        case "samatao":
+          client.say(target, "Sa matao Paco!!!");
+          playSound(sound);    
+          break;
+        case "cuidao":
+          client.say(target, "Cuidaooooo!!!");
+          playSound(sound);    
+          break;
+        case "siuuu":
+          client.say(target, "Siuuuuuuu!!!");
+          playSound(sound);    
+          break;
+        case "jurasico":
+          playSound(sound);    
+          break;
+        case "alcuerno":
+          client.say(target, "Al cuerno todo!!!");
+
           playSound(sound);    
           break;
         case "lee":
@@ -78,7 +99,7 @@ function onMessageHandler (target, context, msg, self) {
           tellJoke();
           break;
         case "comandos":
-          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnotoad");
+          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnotoad, !samatao, !cuidao, !siuuu, !jurasic, !alcuerno. Tienen un timeout de 60 segundos, si quieres saltartelo, mandalo como destacado");
           success = false;
           break;
         default:
@@ -90,7 +111,7 @@ function onMessageHandler (target, context, msg, self) {
         }
 
 
-      if (success) {
+      if (success && !destacado) {
         resetTimeout()
       }
     } else {
@@ -105,10 +126,9 @@ function tellJoke() {
   rp({url: 'http://www.chistes.com/ChisteAlAzar.asp?n=3', encoding: 'latin1'})
   .then(function(html){
     //success!
-    var children = $('.chiste', html)[0].children;
-    console.log(children.length)
     var text = "";
-    children.forEach(function(element) {
+
+    $('.chiste', html)[0].children.forEach(function(element) {
       if(element.data) {
 
         text += element.data + ' '
