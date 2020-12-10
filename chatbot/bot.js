@@ -1,5 +1,10 @@
 const tmi = require('tmi.js');
 const child_process = require('child_process');
+const utf8 = require('utf8');
+const rp = require('request-promise');
+const $ = require('cheerio');
+const { htmlToText } = require('html-to-text');
+
 // Define configuration options
 const opts = {
   identity: {
@@ -15,8 +20,7 @@ const opts = {
 const client = new tmi.client(opts);
 var ready = true;
 var firstInfo = true;
-
-const readAll = true;
+const delay = process.env.DELAY_INFO * 60 * 1000
 
 // Register our event handlers (defined below)
 client.on('message', onMessageHandler);
@@ -27,9 +31,10 @@ client.connect();
 
 function info(target, text) {
   if (firstInfo) {
+    client.say(target, text);
     setInterval(function(){
       client.say(target, text);
-    }, 300000);
+    }, delay);
     firstInfo = false;
   }
 }
@@ -45,22 +50,21 @@ function resetTimeout() {
 // Called every time a message comes in
 function onMessageHandler (target, context, msg, self) {
 
+
   if (self) { return; } // Ignore messages from the bot
-  if (readAll) { 
-    info(target, "Hola gente! Si quereis que el robot asesino lea vuestros mensajes, escribidlos como destacados (lo de gastar puntos)");
-    if (context['msg-id'] == 'highlighted-message') {
-      readText(msg, context['username']); 
-    }
-    return; 
+  
+  info(target, "Hola gente! Si quereis que el robot asesino lea vuestros mensajes, escribidlos como destacados (lo de gastar puntos).\n Para saber los comandos !comandos");
+  
+  if (context['msg-id'] == 'highlighted-message') {
+      readTextUser(msg, context['username']); 
   }
-  info(target, "Hola gente tenemos disponibles los siguientes commandos: !hypnotoad, !lee <texto a leer>");
 
 
   // Remove whitespace from chat message
   const commandName = msg.trim().split(' ')[0];
   var success = true;
   if (commandName.charAt(0)==='!') {
-    if (ready) {
+    if (ready || commandName == '!comandos') {
       const sound = commandName.substring(1);
       switch (sound) {      
         case "hypnotoad":
@@ -68,7 +72,14 @@ function onMessageHandler (target, context, msg, self) {
           playSound(sound);    
           break;
         case "lee":
-          readText(msg, context['username'])
+          readTextUser(msg, context['username'])
+          break;
+        case "chiste":
+          tellJoke();
+          break;
+        case "comandos":
+          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnotoad");
+          success = false;
           break;
         default:
           client.say(target, `${commandName}? Pero que dises?!`);
@@ -89,6 +100,29 @@ function onMessageHandler (target, context, msg, self) {
 
   }
   
+
+function tellJoke() {
+  rp({url: 'http://www.chistes.com/ChisteAlAzar.asp?n=3', encoding: 'latin1'})
+  .then(function(html){
+    //success!
+    var children = $('.chiste', html)[0].children;
+    console.log(children.length)
+    var text = "";
+    children.forEach(function(element) {
+      if(element.data) {
+
+        text += element.data + ' '
+      }
+    });
+    readText(text);
+
+  })
+  .catch(function(err){
+    //handle error
+  });
+}
+
+
 }
 function eliminarDiacriticos(texto) {
     return texto.replace('ñ', 'ny').normalize('NFD').replace(/[\u0300-\u036f]/g,"");
@@ -98,9 +132,12 @@ function playSound(sound) {
   child_process.exec(`mplayer -slave sounds/${sound}.mp3`);
 }
 
-function readText(msg, user) {
-  const text = msg.replace("!lee", "");
-  child_process.exec(`echo "${eliminarDiacriticos(user)} dice: ${eliminarDiacriticos(text)}" | festival --tts`);
+function readText(text) {
+  child_process.exec(`echo "${eliminarDiacriticos(text)}" | festival --tts`);
+}
+
+function readTextUser(msg, user) {
+  readText(`"${user} dice: ${msg}"`.replace("!lee", ""));
 }
 
 // Called every time the bot connects to Twitch chat
