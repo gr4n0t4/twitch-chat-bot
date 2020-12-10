@@ -2,7 +2,7 @@
 
 Simple bot in nodejs to run in linux to read messages aloud and play sounds
 
-###Requirements:
+### Requirements:
 * nodejs
 * npm
 * festival (voices)
