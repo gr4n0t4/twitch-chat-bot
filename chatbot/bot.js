@@ -68,8 +68,8 @@ function onMessageHandler (target, context, msg, self) {
     if (ready || commandName == '!comandos' || destacado) {
       const sound = commandName.substring(1);
       switch (sound) {      
-        case "hypnotoad":
-          client.say(target, "All glory to the hypno toad!");
+        case "hypnosapo":
+          client.say(target, "Alabemos todos al gran hypnosapo!");
           playSound(sound);    
           break;
         case "samatao":
@@ -85,10 +85,15 @@ function onMessageHandler (target, context, msg, self) {
           playSound(sound);    
           break;
         case "jurasico":
+          client.say(target, "Tiriri ri ri, tiri ri ri ri, tiririiiiii!!!");
           playSound(sound);    
           break;
         case "alcuerno":
           client.say(target, "Al cuerno todo!!!");
+          playSound(sound);    
+          break;
+        case "ranita":
+          client.say(target, "Una ranita iba paseando!!!");
           playSound(sound);    
           break;
         case "expulsion":
@@ -102,7 +107,7 @@ function onMessageHandler (target, context, msg, self) {
           tellJoke();
           break;
         case "comandos":
-          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnotoad, !samatao, !cuidao, !siuuu, !jurasic, !alcuerno, !expulsion." +
+          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnosapo, !samatao, !cuidao, !siuuu, !jurasic, !alcuerno, !expulsion, !ranita." +
             "\nTienen un timeout de 60 segundos, si quieres saltartelo, mandalo como destacado");
           success = false;
           break;
