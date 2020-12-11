@@ -89,7 +89,10 @@ function onMessageHandler (target, context, msg, self) {
           break;
         case "alcuerno":
           client.say(target, "Al cuerno todo!!!");
-
+          playSound(sound);    
+          break;
+        case "expulsion":
+          client.say(target, "No me jodas Rafa!!");
           playSound(sound);    
           break;
         case "lee":
@@ -99,7 +102,8 @@ function onMessageHandler (target, context, msg, self) {
           tellJoke();
           break;
         case "comandos":
-          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnotoad, !samatao, !cuidao, !siuuu, !jurasic, !alcuerno. Tienen un timeout de 60 segundos, si quieres saltartelo, mandalo como destacado");
+          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnotoad, !samatao, !cuidao, !siuuu, !jurasic, !alcuerno, !expulsion." +
+            "\nTienen un timeout de 60 segundos, si quieres saltartelo, mandalo como destacado");
           success = false;
           break;
         default:
