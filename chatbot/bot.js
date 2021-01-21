@@ -4,6 +4,7 @@ const utf8 = require('utf8');
 const rp = require('request-promise');
 const $ = require('cheerio');
 const { htmlToText } = require('html-to-text');
+const fs = require('fs');
 
 // Define configuration options
 const opts = {
@@ -44,8 +45,6 @@ function resetTimeout() {
   ready = false;
   setTimeout(function(){ready=true}, 60000);
 }
-
-
 
 // Called every time a message comes in
 function onMessageHandler (target, context, msg, self) {
@@ -106,8 +105,11 @@ function onMessageHandler (target, context, msg, self) {
         case "chiste":
           tellJoke();
           break;
+        case "eugenio":
+          randomJoke();
+          break;
         case "comandos":
-          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnosapo, !samatao, !cuidao, !siuuu, !jurasic, !alcuerno, !expulsion, !ranita." +
+          client.say(target, "Comandos: !lee <texto>, !chiste, !hypnosapo, !samatao, !cuidao, !siuuu, !jurasico, !alcuerno, !expulsion, !ranita, !eugenio." +
             "\nTienen un timeout de 60 segundos, si quieres saltartelo, mandalo como destacado");
           success = false;
           break;
@@ -151,6 +153,15 @@ function tellJoke() {
   });
 }
 
+function randomJoke() {
+    fs.readdir('jokes', (err, files) => {
+      const randomElement = files[Math.floor(Math.random() * files.length)];
+      console.log(randomElement);
+      child_process.exec(`mplayer -slave "jokes/${randomElement}"`);
+    });
+    
+
+}
 
 }
 function eliminarDiacriticos(texto) {
@@ -158,7 +169,7 @@ function eliminarDiacriticos(texto) {
 }
 
 function playSound(sound) {
-  child_process.exec(`mplayer -slave sounds/${sound}.mp3`);
+  child_process.exec(`mplayer -slave "sounds/${sound}.mp3"`);
 }
 
 function readText(text) {
